@@ -1,0 +1,6 @@
+# Sample build used by the "Run Extension" launch configuration.
+-cp src
+-main Main
+-D new_renderer
+-D api_level=3
+--js bin/main.js

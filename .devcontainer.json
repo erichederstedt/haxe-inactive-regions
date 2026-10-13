@@ -1,0 +1,11 @@
+{
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:5-26-trixie",
+	"postCreateCommand": "bash scripts/install-haxe.sh",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Anthropic.claude-code"
+			]
+		}
+	}
+}

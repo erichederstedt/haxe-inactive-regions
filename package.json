@@ -1,0 +1,150 @@
+{
+	"name": "haxe-inactive-regions",
+	"displayName": "Haxe Inactive Regions",
+	"description": "Greys out Haxe code that is excluded by #if / #elseif / #else conditional compilation.",
+	"version": "0.6.0",
+	"publisher": "eric-jonsson-hederstedt",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Other"
+	],
+	"keywords": [
+		"haxe",
+		"conditional compilation",
+		"preprocessor",
+		"inactive regions"
+	],
+	"main": "./out/extension.js",
+	"activationEvents": [
+		"onLanguage:haxe"
+	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "In untrusted workspaces the Haxe compiler is not run; defines are estimated from the hxml files instead.",
+			"restrictedConfigurations": [
+				"haxeInactiveRegions.haxePath"
+			]
+		}
+	},
+	"contributes": {
+		"languages": [
+			{
+				"id": "haxe",
+				"aliases": [
+					"Haxe",
+					"haxe"
+				],
+				"extensions": [
+					".hx"
+				]
+			}
+		],
+		"commands": [
+			{
+				"command": "haxeInactiveRegions.selectConfiguration",
+				"title": "Select Build Configuration",
+				"category": "Haxe Inactive Regions"
+			},
+			{
+				"command": "haxeInactiveRegions.showDefines",
+				"title": "Show Active Defines",
+				"category": "Haxe Inactive Regions"
+			},
+			{
+				"command": "haxeInactiveRegions.refresh",
+				"title": "Refresh",
+				"category": "Haxe Inactive Regions"
+			},
+			{
+				"command": "haxeInactiveRegions.toggle",
+				"title": "Toggle Greying",
+				"category": "Haxe Inactive Regions"
+			}
+		],
+		"configuration": {
+			"title": "Haxe Inactive Regions",
+			"properties": {
+				"haxeInactiveRegions.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Grey out code excluded by conditional compilation."
+				},
+				"haxeInactiveRegions.opacity": {
+					"type": "number",
+					"default": 0.4,
+					"minimum": 0,
+					"maximum": 1,
+					"description": "Opacity of inactive code (0 = invisible, 1 = normal)."
+				},
+				"haxeInactiveRegions.compilerArgs": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"scope": "resource",
+					"markdownDescription": "Haxe compiler arguments describing the build whose defines decide what is active, e.g. `[\"build.hxml\"]` or `[\"build.hxml\", \"-D\", \"foo\"]`. When empty, vshaxe's active configuration is used (see `#haxeInactiveRegions.useVshaxeConfiguration#`), then the first entry of `#haxe.configurations#`, then `build.hxml`, then the first `.hxml` file in the workspace folder. If the arguments describe several builds (`--next`), the first one is used."
+				},
+				"haxeInactiveRegions.useVshaxeConfiguration": {
+					"type": "boolean",
+					"default": true,
+					"scope": "resource",
+					"markdownDescription": "When the Haxe extension (vshaxe) is installed, use its active configuration (the one shown in its status bar, including Lime/OpenFL projects) unless `#haxeInactiveRegions.compilerArgs#` is set. Its defines include those of libraries and their dependencies, but not those added by initialization macros."
+				},
+				"haxeInactiveRegions.defines": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"scope": "resource",
+					"markdownDescription": "Extra defines applied on top of the build's defines. Use `name`, `name=value`, or `!name` to undefine."
+				},
+				"haxeInactiveRegions.definesSource": {
+					"type": "string",
+					"enum": [
+						"auto",
+						"hxml"
+					],
+					"enumDescriptions": [
+						"Ask the Haxe compiler for the exact defines (includes defines added by haxelibs); fall back to reading the hxml if that fails.",
+						"Never run the compiler; estimate defines from the hxml arguments (-D, -lib, target)."
+					],
+					"default": "auto",
+					"scope": "resource",
+					"description": "How to determine the active defines."
+				},
+				"haxeInactiveRegions.haxePath": {
+					"type": "string",
+					"default": "",
+					"scope": "machine-overridable",
+					"markdownDescription": "Path to the Haxe executable. When empty, `#haxe.executable#` (vshaxe) is used, then a local lix shim, then `haxe` from the PATH."
+				},
+				"haxeInactiveRegions.haxeVersion": {
+					"type": "string",
+					"default": "",
+					"scope": "resource",
+					"markdownDescription": "Haxe version used for `haxe_ver`, `haxe4` etc. when defines are estimated from hxml. When empty, `haxe --version` is used."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"test": "npm run compile && node --test out/test/",
+		"package": "vsce package --no-dependencies --allow-missing-repository"
+	},
+	"devDependencies": {
+		"@types/node": "^26.0.0",
+		"@types/vscode": "~1.75.0",
+		"@vscode/vsce": "^4.0.0",
+		"typescript": "^5.9.0"
+	}
+}

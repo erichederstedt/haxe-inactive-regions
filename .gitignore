@@ -1,0 +1,12 @@
+# Build output
+out/
+*.vsix
+sample/bin/
+
+# Dependencies
+node_modules/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
