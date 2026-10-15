@@ -25,6 +25,8 @@ the way C/C++ editors grey out inactive `#ifdef` blocks.
    Libraries are looked up in the haxelib repository (or lix's `haxe_libraries`), so their versions,
    dependencies and `extraParams.hxml` defines are included; only defines set by initialization macros are missed.
 3. **Overrides**: `haxeInactiveRegions.defines` adds (`name`, `name=value`) or removes (`!name`) defines.
+   `haxeInactiveRegions.ignoredDefines` lists defines that may be either set or not: conditions using them
+   aren't evaluated, so e.g. `["macro"]` keeps both `#if macro` and `#if !macro` code un-greyed.
 
 Conditions are evaluated with the compiler's own rules (string vs. numeric comparison, `version("x.y.z")`,
 dotted names like `target.sys`, unparenthesised single-operand conditions such as `#if js trace(1); #end`).
@@ -41,6 +43,7 @@ Hover over an `#if` / `#elseif` / `#else` to see the condition's value and the d
 | `haxeInactiveRegions.compilerArgs` | `[]` | Build arguments, e.g. `["build.hxml"]`. |
 | `haxeInactiveRegions.useVshaxeConfiguration` | `true` | Follow vshaxe's active configuration. |
 | `haxeInactiveRegions.defines` | `[]` | Extra defines: `name`, `name=value`, `!name`. |
+| `haxeInactiveRegions.ignoredDefines` | `[]` | Defines that may be either set or not, e.g. `["macro"]`; code depending on them is never greyed. |
 | `haxeInactiveRegions.definesSource` | `auto` | `auto` (ask the compiler) or `hxml` (never run it). |
 | `haxeInactiveRegions.haxePath` | `""` | Haxe executable; defaults to vshaxe's `haxe.executable`, a lix shim, or `haxe`. |
 | `haxeInactiveRegions.haxeVersion` | `""` | Haxe version for the `hxml` fallback; defaults to `haxe --version`. |

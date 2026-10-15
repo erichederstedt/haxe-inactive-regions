@@ -26,6 +26,8 @@ interface ResolvedDefines {
 	warning?: string;
 	/** Defines whose value could not be determined. */
 	unknown?: Set<string>;
+	/** Defines from `ignoredDefines`; conditions using them are not evaluated. */
+	ignored: Set<string>;
 }
 
 interface BuildConfig {
@@ -200,7 +202,9 @@ class InactiveRegions implements vscode.HoverProvider, vscode.Disposable {
 
 		const defines = await this.provider.get(folderFor(doc));
 		if (doc.isClosed) return;
-		const analysis = analyze(doc.getText(), (name) => (defines.unknown?.has(name) ? null : defines.defines.get(name)));
+		const analysis = analyze(doc.getText(), (name) =>
+			defines.unknown?.has(name) || defines.ignored.has(name) ? null : defines.defines.get(name),
+		);
 		this.analyses.set(doc.uri.toString(), { version: doc.version, analysis, defines });
 
 		const ranges = analysis.inactive.map((r) => new vscode.Range(doc.positionAt(r.start), doc.positionAt(r.end)));
@@ -239,11 +243,13 @@ class InactiveRegions implements vscode.HoverProvider, vscode.Disposable {
 			md.appendMarkdown(`\`#${directive.kind} ${cond.text}\` ${verdict}\n\n`);
 			for (const name of cond.identifiers) {
 				const value = entry.defines.defines.get(name);
-				const shown = entry.defines.unknown?.has(name)
-					? '_unknown_'
-					: value === undefined
-						? '_not defined_'
-						: `= \`${JSON.stringify(value)}\``;
+				const shown = entry.defines.ignored.has(name)
+					? '_ignored_'
+					: entry.defines.unknown?.has(name)
+						? '_unknown_'
+						: value === undefined
+							? '_not defined_'
+							: `= \`${JSON.stringify(value)}\``;
 				md.appendMarkdown(`- \`${name}\` ${shown}\n`);
 			}
 			if (cond.identifiers.some((name) => entry.defines.unknown?.has(name))) {
@@ -341,7 +347,8 @@ class DefinesProvider {
 			applyOverrides(defines, overrides);
 			if (overrides.length > 0) source += ' + settings';
 			this.log(`Using ${defines.size} defines from ${source}`);
-			return { defines, label: build?.label ?? 'no build configuration', source, warning };
+			const ignored = new Set(config.get<string[]>('ignoredDefines', []));
+			return { defines, label: build?.label ?? 'no build configuration', source, warning, ignored };
 		};
 
 		const useCompiler = config.get<string>('definesSource', 'auto') === 'auto';

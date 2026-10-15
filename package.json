@@ -2,7 +2,7 @@
 	"name": "haxe-inactive-regions",
 	"displayName": "Haxe Inactive Regions",
 	"description": "Greys out Haxe code that is excluded by #if / #elseif / #else conditional compilation.",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"publisher": "eric-jonsson-hederstedt",
 	"license": "MIT",
 	"engines": {
@@ -104,6 +104,15 @@
 					"default": [],
 					"scope": "resource",
 					"markdownDescription": "Extra defines applied on top of the build's defines. Use `name`, `name=value`, or `!name` to undefine."
+				},
+				"haxeInactiveRegions.ignoredDefines": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"scope": "resource",
+					"markdownDescription": "Defines that may be either set or not, so code under conditions that use them is never greyed out. For example, `[\"macro\"]` keeps both `#if macro` and `#if !macro` code active."
 				},
 				"haxeInactiveRegions.definesSource": {
 					"type": "string",
